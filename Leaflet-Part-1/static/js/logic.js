@@ -1,104 +1,136 @@
-function createMap(shakeAndBake) {
-
-    // Create the tile layer that will be the background of our map.
-    let streetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        
-    });
-    let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-      });
-    let googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
-      });
-    
-  // Create a baseMaps object to hold the streetmap layer.
-  let baseMaps = {
-    "Street Map": streetmap,
-    "Google Map": googleStreets,
-    "Google Satelite": googleSat
-  };
-
-  // Create an overlayMaps object to hold the quakefeatures layer.
-  let overlayMaps = {
-    "30 day Quake Spots": shakeAndBake
-    // "7 day Quake Spots": jelloJigglers
-  };
-   // Create the map object with options.
-   let map = L.map("map", {
-    center: [39.8283, -98.5795],
-    zoom: 5,
-    layers: [streetmap, shakeAndBake]
-  });
-
-  // Create a layer control, and pass it baseMaps and overlayMaps. Add the layer control to the map.
-  L.control.layers(baseMaps, overlayMaps, {
-    collapsed: false
-  }).addTo(map);
-}
-function createMarkers(response) {
-console.log(`Checking the Response data`,response)
-// Pull the "features" property from response.data.
-let features = response.features;
-console.log (`Checking the Feature data`,features)
-
-// Create an array to hold the quake markers.
-let quakeMarkers = [];
-
-// Loop through the features array.
-for (let index = 0; index < features.length; index++) {
-    let feature = features[index];
-    // let qtime = feature.properties.time
-    // let date = qtime.toString
-    
-      // Define a color scale for the depth of the earthquake.
-      let depthColorScale = d3.scaleLinear()
-      .domain([0, 1, 3, 5, 7, 9])
-      .range(["#053f9c", "#05539c", "#05719c", "#05929c", "#059c88", "#059c50"]);
-
-    let spotify = {
-        radius: feature.properties.mag * 20000, // use magnitude for circle radius
-        fillColor: depthColorScale(feature.geometry.coordinates[2]), // use depth for fill color
-        color: 'Lime', // use black for stroke color
-        weight: 1,
-        opacity: 0.8,
-        fillOpacity: 0.8
-      };
-      var dateify = {
-        timeZone: 'UTC',
-        hour12: false,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric'
-      };
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").then(function (data) {
+  // Once we get a response, send the data.features object to the createFeatures function.
+  createFeatures(data.features);
+});
 
 
-      let quakeMarker = L.circle([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], spotify)
-    .bindPopup("<h3>" + feature.properties.place + 
+
+function markerColor(depth) {
+  if (depth <= 0) {
+      return "#6200EA"
+  } else if (depth <= 10) {
+      return "#311B92"
+    } else if (depth <= 20) {
+      return "#283593"
+    } else if (depth <= 30) {
+      return "#3949AB"
+    } else if (depth <= 40) {
+      return "#5C6BC0"
+    } else if (depth <= 50) {
+      return "#9FA8DA"
+    } else if (depth <= 60) {
+      return "Cyan"
+  } else if (depth <= 70) {
+      return "#90CAF9"
+  } else if (depth <= 80) {
+      return "#2196F3"
+  } else if (depth <= 90) {
+      return "#1565C0"
+  } else {
+      return "#0D47A1"
+  }
+};
+
+function createFeatures(shakeAndBake) {
+
+  // Define a function that we want to run once for each feature in the features array.
+  // Give each feature a popup that describes the place and time of the earthquake.
+  function onEachFeature(feature, layer) {
+    layer.bindPopup("<h3>" + feature.properties.place + 
     "<h3><h3>Magnitude: " + feature.properties.mag + 
     "<h3><h3>Depth: " + feature.geometry.coordinates[2] + 
     "<h3><h3>Tsunami's Created: " + feature.properties.tsunami +
-    "<h3><h3>Date of Quake: " + new Date(feature.properties.time ).toLocaleDateString() + "</h3>");
+    "<h3><h3>Date of Quake: " + new Date(feature.properties.time ).toDateString() + "</h3>");
+  }
 
+  // Create a GeoJSON layer that contains the features array on the shakeAndBake object.
+  // Run the onEachFeature function once for each piece of data in the array.
+ 
+  
+let jelloJigglers = L.geoJSON(shakeAndBake, {
+  onEachFeature: onEachFeature,
+  pointToLayer: function(feature, latlng) {
+    return L.circle(latlng, {
+        radius: feature.properties.mag * 12345,
+        fillColor: markerColor(feature.geometry.coordinates[2]),
+        color: "Black",
+        weight: 1,
+        opacity: 0.75,
+        fillOpacity: 1
+    });
+},
+onEachFeature: onEachFeature
+});
 
-   
-
-    // Add the marker to the quakeMarkers array.
-    quakeMarkers.push(quakeMarker);
-    
+// Sending our jelloJigglers layer to the createMap function
+createMap(jelloJigglers);
 }
 
-// Create a layer group that's made from the quake markers array, and pass it to the createMap function.
-createMap(L.layerGroup(quakeMarkers));
-  }
-    
-    
- 
-     
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").then(createMarkers);
+function createMap(jelloJigglers) {
 
+  // Create the tile layer that will be the background of our map.
+  let googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+  });
+  let streetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    
+});
+let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+    maxZoom: 20,
+    subdomains:['mt0','mt1','mt2','mt3']
+  });
+
+
+// Create a baseMaps object to hold the streetmap layer.
+let baseMaps = {
+"Google Satelite": googleSat,
+"Street Map": streetmap,
+"Google Map": googleStreets,
+
+};
+
+  // Create an overlay object to hold our overlay.
+  let overlayMaps = {
+    "30 day Quake Spots": jelloJigglers
+  };
+// Function for Circle Color Base on Criteria. The Color Scale is base of the 7 colors of a Rainboy ROY G BIV
+
+ 
+  // Create our map, giving it the streetmap and jelloJigglers layers to display on load.
+  let myMap = L.map("map", {
+    center: [39.8283, -98.5795],
+    zoom: 5,
+    layers: [googleSat, jelloJigglers]
+  });
+    
+  // Create a layer control.
+  // Pass it our baseMaps and overlayMaps.
+  // Add the layer control to the map.
+  L.control.layers(baseMaps, overlayMaps, {
+    collapsed: false
+  }).addTo(myMap);
+
+  let legend = L.control({ position: "bottomleft",
+  basesize: 10});
+  legend.onAdd = function(map) {
+      let div = L.DomUtil.create("div", "info legend");
+      depths= [ -100,1,10,20,30,40,50,60,70,80,90];
+      labels = [];
+      bgcolor = "white",
+      legendInfo = "<h4>Quake Depth</h4>";
+      div.innerHTML = legendInfo;
+      // push to labels array as list item
+      for (let i = 0; i < depths.length; i++) {
+          labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]
+               ? '&ndash;' + depths[i + 1] + '<br>' : '+')) ;
+      }
+      // add label items to the div under the <ul> tag
+      div.innerHTML += "<ul>" + labels.join("") + "</ul>";
+      return div;
+  };
+  // Add legend to the map
+  legend.addTo(myMap);
+
+};
