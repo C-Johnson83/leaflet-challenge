@@ -1,40 +1,39 @@
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson").then(function (data) {
-  // Once we get a response, send the data.features object to the createFeatures function.
-  createFeatures(data.features);
+  //Get the earthquake data
+  spotify(data.features);
 });
 
 
-
+// Function for all the marker and legend colors by Depth
 function markerColor(depth) {
   if (depth <= 0) {
-      return "#6200EA"
+      return "brown"
   } else if (depth <= 10) {
-      return "#311B92"
+      return "red"
     } else if (depth <= 20) {
-      return "#283593"
+      return "yellow"
     } else if (depth <= 30) {
-      return "#3949AB"
+      return "orange"
     } else if (depth <= 40) {
-      return "#5C6BC0"
+      return "pink"
     } else if (depth <= 50) {
-      return "#9FA8DA"
+      return "purple"
     } else if (depth <= 60) {
       return "Cyan"
   } else if (depth <= 70) {
-      return "#90CAF9"
+      return "aqua"
   } else if (depth <= 80) {
-      return "#2196F3"
+      return "steelblue"
   } else if (depth <= 90) {
-      return "#1565C0"
+      return "blue"
   } else {
-      return "#0D47A1"
+      return "magenta"
   }
 };
 
-function createFeatures(shakeAndBake) {
+function spotify(shakeAndBake) {
 
-  // Define a function that we want to run once for each feature in the features array.
-  // Give each feature a popup that describes the place and time of the earthquake.
+ // For each feature set the popup information 
   function onEachFeature(feature, layer) {
     layer.bindPopup("<h3>" + feature.properties.place + 
     "<h3><h3>Magnitude: " + feature.properties.mag + 
@@ -43,8 +42,7 @@ function createFeatures(shakeAndBake) {
     "<h3><h3>Date of Quake: " + new Date(feature.properties.time ).toDateString() + "</h3>");
   }
 
-  // Create a GeoJSON layer that contains the features array on the shakeAndBake object.
-  // Run the onEachFeature function once for each piece of data in the array.
+ // Set the marker options
  
   
 let jelloJigglers = L.geoJSON(shakeAndBake, {
@@ -62,17 +60,18 @@ let jelloJigglers = L.geoJSON(shakeAndBake, {
 onEachFeature: onEachFeature
 });
 
-// Sending our jelloJigglers layer to the createMap function
+// Create the map with the markers
 createMap(jelloJigglers);
 }
-
+// Function to create the map layers
 function createMap(jelloJigglers) {
 
-  // Create the tile layer that will be the background of our map.
+  // Create the default layer
   let googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
     maxZoom: 20,
     subdomains:['mt0','mt1','mt2','mt3']
   });
+  // Create alternative layers
   let streetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     
@@ -83,7 +82,7 @@ let googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={
   });
 
 
-// Create a baseMaps object to hold the streetmap layer.
+// Create a baseMaps 
 let baseMaps = {
 "Google Satelite": googleSat,
 "Street Map": streetmap,
@@ -91,14 +90,13 @@ let baseMaps = {
 
 };
 
-  // Create an overlay object to hold our overlay.
+  // Create the overlay maps
   let overlayMaps = {
     "30 day Quake Spots": jelloJigglers
   };
-// Function for Circle Color Base on Criteria. The Color Scale is base of the 7 colors of a Rainboy ROY G BIV
 
  
-  // Create our map, giving it the streetmap and jelloJigglers layers to display on load.
+  // Create the loading map
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 5,
@@ -106,12 +104,10 @@ let baseMaps = {
   });
     
   // Create a layer control.
-  // Pass it our baseMaps and overlayMaps.
-  // Add the layer control to the map.
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
-
+// Create the map legend 
   let legend = L.control({ position: "bottomleft",
   basesize: 10});
   legend.onAdd = function(map) {
@@ -121,12 +117,12 @@ let baseMaps = {
       bgcolor = "white",
       legendInfo = "<h4>Quake Depth</h4>";
       div.innerHTML = legendInfo;
-      // push to labels array as list item
+      // Append the information to the empty labels array
       for (let i = 0; i < depths.length; i++) {
           labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]
                ? '&ndash;' + depths[i + 1] + '<br>' : '+')) ;
       }
-      // add label items to the div under the <ul> tag
+      // add label items to the div 
       div.innerHTML += "<ul>" + labels.join("") + "</ul>";
       return div;
   };
