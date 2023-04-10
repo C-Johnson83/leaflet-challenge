@@ -3,7 +3,6 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geo
   spotify(data.features);
 });
 
-
 // Function for all the marker and legend colors by Depth
 function markerColor(depth) {
   if (depth <= 0) {
@@ -57,12 +56,16 @@ let jelloJigglers = L.geoJSON(shakeAndBake, {
         fillOpacity: 1
     });
 },
-onEachFeature: onEachFeature
+
 });
 
 // Create the map with the markers
 createMap(jelloJigglers);
 }
+
+ 
+
+
 // Function to create the map layers
 function createMap(jelloJigglers) {
 
@@ -95,7 +98,15 @@ let NASAGIBS_ViirsEarthAtNight2012 = L.tileLayer('https://map1.vis.earthdata.nas
 	time: '',
 	tilematrixset: 'GoogleMapsCompatible_Level'
 });
-
+d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_plates.json").then(function (platesData) {
+  // Create a geoJSON layer for the plate boundaries
+  let plates = L.geoJSON(platesData, {
+    fillColor: "orange",
+    fillOpacity: 0,
+    color: "magenta",
+    weight: 2
+  });
+console.log(plates)
 // Create a baseMaps 
 let baseMaps = {
 "Dark Matter": CartoDB_DarkMatter,
@@ -110,7 +121,7 @@ let baseMaps = {
   // Create the overlay maps
   let overlayMaps = {
     "30 day Quake Spots": jelloJigglers,
-   
+   "Tectonic plates": plates
   };
 
  
@@ -120,12 +131,18 @@ let baseMaps = {
     zoom: 5,
     layers: [CartoDB_DarkMatter, jelloJigglers]
   });
-    
+
+
+  
+
   // Create a layer control.
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false,
     color: "gray"
   }).addTo(myMap);
+  // Add the plates layer to the map
+  plates.addTo(myMap);
+
 // Create the map legend 
   let legend = L.control({ position: "bottomright",
   basesize: 10});
@@ -147,4 +164,5 @@ let baseMaps = {
   // Add legend to the map
   legend.addTo(myMap);
 
-};
+})
+}
