@@ -128,9 +128,23 @@ right off of the interstate.</h2><h3> Oh, and we can also have all 4 seasons in 
  Temperature: 81° F<br>Elevation: 109 meters above Sea Level<h3> `);
 let myLayer = L.layerGroup([myLocation]);
 
+// Create Japan Marker/Layer
+let wishLocation = L.circleMarker([36.2048, 138.2529], {
+  radius: 10,
+  fillColor: "red",
+  color: "white",
+  fillOpacity:.5,
+  weight: 3
+}).bindPopup(`<h1>I Would Love to Live here</h1><h2>Japan has a fascinating and multifaceted culture!</h2><h2> Amazing street foods such as<h3>- Sushi<br>- Ramen<br>- and Tempura</h3><h2>
+Beautiful scenery such as <h3>- The snow topped Mount Fuji</br>- The "cloud walk" at Unkai Terrace, </br>- And many many beautiful castles!
+</h3><h2> Japan consists of a whopping 6,852 islands!<h3>Though most of them are uninhabited<h2>Population: 125.7 million (2021)<br> Humidity: 77%<br>
+ Temperature: 70° F<br>Elevation: 438 meters above Sea Level<h2> `);
+let wishLayer = L.layerGroup([wishLocation]);
+
   // Create the overlay maps
   let overlayMaps = {
-    "My Town:": myLayer,
+    "Where I Live:": myLayer,
+    "Where I Want to Live": wishLayer,
    "Tectonic plates": plates,
    "30 day Quake Spots": jelloJigglers,
   };
@@ -141,10 +155,15 @@ let myLayer = L.layerGroup([myLocation]);
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 5,
-    layers: [CartoDB_DarkMatter, jelloJigglers,myLayer]
+    layers: [CartoDB_DarkMatter, jelloJigglers,myLayer, wishLayer]
   });
 
-
+  myLocation.on('click', function(e) {
+    myMap.flyTo(e.latlng, 8);      
+  }); 
+  wishLocation.on('click', function(e) {
+    myMap.flyTo(e.latlng, 8);      
+  });   
   
 
   // Create a layer control.
