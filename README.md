@@ -16,7 +16,7 @@ Part 1: Create the Earthquake Visualization
 Part 2: Gather and Plot More Data (Optional with no extra points earning)
 
 # Part 1: Create the Earthquake Visualization
-image.png
+![image](https://user-images.githubusercontent.com/117872216/231568595-3a464585-6dc1-442b-8fbb-bb1f67040f90.png)
 
 Your first task is to visualize an earthquake dataset. Complete the following steps:
 
@@ -26,12 +26,12 @@ Your first task is to visualize an earthquake dataset. Complete the following st
  Visit the USGS GeoJSON FeedLinks to an external site. page and choose a dataset to visualize. 
  The following image is an example screenshot of what appears when you visit this link:
 
-image.png
+![image](https://user-images.githubusercontent.com/117872216/231568638-065323fa-87ef-4d5b-99ee-12224866e4d8.png)
 
 -When you click a dataset (such as "All Earthquakes from the Past 7 Days"), you will be given a JSON representation of that data. 
  Use the URL of this JSON to pull in the data for the visualization. The following image is a sampling of earthquake data in JSON format:
 
- image.png
+![image](https://user-images.githubusercontent.com/117872216/231568672-cb8daee1-f1da-4af2-9555-8addcac1232f.png)
 
 2. Import and visualize the data by doing the following:
 
@@ -56,7 +56,7 @@ This part is completely optional; you can complete this part as a way to challen
 
 The following image is an example screenshot of what you should produce:
 
-image.png
+![image](https://user-images.githubusercontent.com/117872216/231568714-3fbf0d92-f7c8-417d-8d1a-8a846510551e.png)
 
 Perform the following tasks:
 
