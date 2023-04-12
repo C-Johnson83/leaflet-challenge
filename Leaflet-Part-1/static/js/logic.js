@@ -43,15 +43,13 @@ function spotify(shakeAndBake) {
   }
 
  // Set the marker options
- 
-  
 let jelloJigglers = L.geoJSON(shakeAndBake, {
   onEachFeature: onEachFeature,
   pointToLayer: function(feature, latlng) {
     return L.circleMarker(latlng, {
-        radius: feature.properties.mag * 2,
+        radius: feature.properties.mag * 4,
         fillColor: markerColor(feature.geometry.coordinates[2]),
-        color: "white",
+        color: "black",
         weight: .5,
         opacity: 0.75,
         fillOpacity: 1
@@ -67,7 +65,6 @@ createMap(jelloJigglers);
 function createMap(jelloJigglers) {
 
   // Create the default layer
-
  let CartoDB_DarkMatter = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 	subdomains: 'abcd',
@@ -118,14 +115,15 @@ let baseMaps = {
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 5,
-    layers: [CartoDB_DarkMatter, jelloJigglers]
+    layers: [streetmap, jelloJigglers]
   });
-    
+
   // Create a layer control.
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false,
     color: "gray"
   }).addTo(myMap);
+
 // Create the map legend 
   let legend = L.control({ position: "bottomright",
   basesize: 10});
@@ -135,6 +133,7 @@ let baseMaps = {
       labels = [];
       legendInfo = "<h3>Quake Depth <br> In Kilometers <br> Below Sea Level</h3>";
       div.innerHTML = legendInfo;
+      
       // Append the information to the empty labels array
       for (let i = 0; i < depths.length; i++) {
           labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]

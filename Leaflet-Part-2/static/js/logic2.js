@@ -98,8 +98,9 @@ let NASAGIBS_ViirsEarthAtNight2012 = L.tileLayer('https://map1.vis.earthdata.nas
 	time: '',
 	tilematrixset: 'GoogleMapsCompatible_Level'
 });
+ // Read in the data ane create a geoJSON layer for the plate boundaries
 d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_plates.json").then(function (platesData) {
-  // Create a geoJSON layer for the plate boundaries
+ 
   let plates = L.geoJSON(platesData, {
     fillColor: "orange",
     fillOpacity: 0,
@@ -107,7 +108,8 @@ d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/
     color: "magenta",
     weight: 2
   });
-console.log(plates)
+// console.log(plates) // checking the data
+
 // Create a baseMaps 
 let baseMaps = {
 "Dark Matter": CartoDB_DarkMatter,
@@ -117,7 +119,7 @@ let baseMaps = {
 "NASA at Night": NASAGIBS_ViirsEarthAtNight2012
 };
 
-// Create my Home Town Marker/Layer
+// Create my Home Town Marker/Layer and popup info
 let myLocation = L.circleMarker([31.4505, -83.5085], {
   fillColor: "orange",
   color: "red",
@@ -128,15 +130,15 @@ right off of the interstate.</h2><h3> Oh, and we can also have all 4 seasons in 
  Temperature: 81° F<br>Elevation: 109 meters above Sea Level<h3> `);
 let myLayer = L.layerGroup([myLocation]);
 
-// Create Japan Marker/Layer
+// Create Japan Marker/Layer and popup info
 let wishLocation = L.circleMarker([36.2048, 138.2529], {
   radius: 10,
   fillColor: "red",
   color: "white",
   fillOpacity:.5,
   weight: 3
-}).bindPopup(`<h1>I Would Love to Live here</h1><h2>Japan has a fascinating and multifaceted culture!</h2><h2> Amazing street foods such as<h3>- Sushi<br>- Ramen<br>- and Tempura</h3><h2>
-Beautiful scenery such as <h3>- The snow topped Mount Fuji</br>- The "cloud walk" at Unkai Terrace, </br>- And many many beautiful castles!
+}).bindPopup(`<h1>I Would Love to Live here</h1><h2>Japan has a fascinating and multifaceted culture!</h2><h2> Amazing street foods such as:<h3>- Sushi<br>- Ramen<br>- and Tempura</h3><h2>
+Beautiful scenery such as: <h3>- The snow topped Mount Fuji</br>- The "cloud walk" at Unkai Terrace, </br>- And many many beautiful castles!
 </h3><h2> Japan consists of a whopping 6,852 islands!<h3>Though most of them are uninhabited<h2>Population: 125.7 million (2021)<br> Humidity: 77%<br>
  Temperature: 70° F<br>Elevation: 438 meters above Sea Level<h2> `);
 let wishLayer = L.layerGroup([wishLocation]);
@@ -154,15 +156,17 @@ let wishLayer = L.layerGroup([wishLocation]);
   // Create the loading map
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
-    zoom: 5,
+    zoom: 4,
     layers: [CartoDB_DarkMatter, jelloJigglers,myLayer, wishLayer]
   });
 
+//Add flyto so the screen moves to the markers lat, lon on click for the where I live
+// and where I want to live layers
   myLocation.on('click', function(e) {
-    myMap.flyTo(e.latlng, 8);      
+    myMap.flyTo(e.latlng, 13);      
   }); 
   wishLocation.on('click', function(e) {
-    myMap.flyTo(e.latlng, 8);      
+    myMap.flyTo(e.latlng, 9);      
   });   
   
 
@@ -171,6 +175,7 @@ let wishLayer = L.layerGroup([wishLocation]);
     collapsed: false,
     color: "gray"
   }).addTo(myMap);
+
   // Add the plates layer to the map
   plates.addTo(myMap);
 
@@ -183,6 +188,7 @@ let wishLayer = L.layerGroup([wishLocation]);
       labels = [];
       legendInfo = "<h3>Quake Depth <br> In Kilometers <br> Below Sea Level</h3>";
       div.innerHTML = legendInfo;
+
       // Append the information to the empty labels array
       for (let i = 0; i < depths.length; i++) {
           labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]
