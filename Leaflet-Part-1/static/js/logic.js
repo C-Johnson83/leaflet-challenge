@@ -51,8 +51,8 @@ let jelloJigglers = L.geoJSON(shakeAndBake, {
     return L.circleMarker(latlng, {
         radius: feature.properties.mag * 2,
         fillColor: markerColor(feature.geometry.coordinates[2]),
-        color: "Black",
-        weight: 1,
+        color: "white",
+        weight: .5,
         opacity: 0.75,
         fillOpacity: 1
     });
@@ -131,14 +131,14 @@ let baseMaps = {
   basesize: 10});
   legend.onAdd = function(map) {
       let div = L.DomUtil.create("div", "info legend");
-      depths= [ -100,1,10,20,30,40,50,60,70,80,90];
+      depths= [ -10,1,10,20,30,40,50,60,70,80,90];
       labels = [];
-      legendInfo = "<h3>Quake Depth by Kilometers</h3>";
+      legendInfo = "<h3>Quake Depth <br> In Kilometers <br> Below Sea Level</h3>";
       div.innerHTML = legendInfo;
       // Append the information to the empty labels array
       for (let i = 0; i < depths.length; i++) {
           labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]
-               ? ' &ndash; ' + depths[i + 1] +' Kilometers' + '<br>' : ' +  Kilometers')) ;
+               ? ' &ndash; ' + depths[i + 1] +' ' + '<br>' : ' + ')) ;
       }
       // add label items to the div 
       div.innerHTML += "<ul>" + labels.join("") + "</ul>";

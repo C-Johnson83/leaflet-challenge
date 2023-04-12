@@ -6,27 +6,27 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geo
 // Function for all the marker and legend colors by Depth
 function markerColor(depth) {
   if (depth <= 0) {
-      return "purple"
+      return "#5b0c69"
   } else if (depth <= 10) {
-      return "blueviolet"
+      return "#562e86"
     } else if (depth <= 20) {
-      return "blue "
+      return "#4948a2 "
     } else if (depth <= 30) {
-      return "aquamarine"
+      return "#3160ba"
     } else if (depth <= 40) {
-      return "green"
+      return "#0076ce"
     } else if (depth <= 50) {
-      return "greenyellow"
+      return "#008ddf"
     } else if (depth <= 60) {
-      return "yellow"
+      return "#00a3eb"
   } else if (depth <= 70) {
-      return "gold"
+      return "#00b8f4"
   } else if (depth <= 80) {
-      return "orange"
+      return "#00cdfa"
   } else if (depth <= 640) {
-      return "orangered"
+      return "#00e2fd"
   } else {
-      return "magenta"
+      return "#05f6ff"
   }
 };
 
@@ -48,7 +48,7 @@ let jelloJigglers = L.geoJSON(shakeAndBake, {
   onEachFeature: onEachFeature,
   pointToLayer: function(feature, latlng) {
     return L.circleMarker(latlng, {
-        radius: feature.properties.mag * 2,
+        radius: feature.properties.mag * 3,
         fillColor: markerColor(feature.geometry.coordinates[2]),
         color: "Black",
         weight: 1,
@@ -103,6 +103,7 @@ d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/
   let plates = L.geoJSON(platesData, {
     fillColor: "orange",
     fillOpacity: 0,
+    interactive: false,
     color: "magenta",
     weight: 2
   });
@@ -113,23 +114,34 @@ let baseMaps = {
 "Street Map": streetmap,
 "Topographical": OpenTopoMap,
 "World Map": Esri_WorldImagery,
-
 "NASA at Night": NASAGIBS_ViirsEarthAtNight2012
-
 };
+
+// Create my Home Town Marker/Layer
+let myLocation = L.circleMarker([31.4505, -83.5085], {
+  fillColor: "orange",
+  color: "red",
+  fillOpacity:.5,
+  weight: 1
+}).bindPopup(`<h1>My Home Town</h1><h2>Where there is almost nothing for residents to do <br> We are an interstate town with everything accessible<br>
+right off of the interstate.</h2><h3> Oh, and we can also have all 4 seasons in 1 week <h3><br><h3>Population: 17,235 (2021)<br> Humidity: 75%<br>
+ Temperature: 81° F<br>Elevation: 109 meters above Sea Level<h3> `);
+let myLayer = L.layerGroup([myLocation]);
 
   // Create the overlay maps
   let overlayMaps = {
-    "30 day Quake Spots": jelloJigglers,
-   "Tectonic plates": plates
+    "My Town:": myLayer,
+   "Tectonic plates": plates,
+   "30 day Quake Spots": jelloJigglers,
   };
+ 
 
  
   // Create the loading map
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 5,
-    layers: [CartoDB_DarkMatter, jelloJigglers]
+    layers: [CartoDB_DarkMatter, jelloJigglers,myLayer]
   });
 
 
@@ -148,14 +160,14 @@ let baseMaps = {
   basesize: 10});
   legend.onAdd = function(map) {
       let div = L.DomUtil.create("div", "info legend");
-      depths= [ -100,1,10,20,30,40,50,60,70,80,90];
+      depths= [ -10,1,10,20,30,40,50,60,70,80,90];
       labels = [];
-      legendInfo = "<h3>Quake Depth by Kilometers</h3>";
+      legendInfo = "<h3>Quake Depth <br> In Kilometers <br> Below Sea Level</h3>";
       div.innerHTML = legendInfo;
       // Append the information to the empty labels array
       for (let i = 0; i < depths.length; i++) {
           labels.push('<i style="background-color:' + markerColor(depths[i] + 1) + '"></i>' + depths[i] + (depths[i + 1]
-               ? ' &ndash; ' + depths[i + 1] +' Kilometers' + '<br>' : ' +  Kilometers')) ;
+               ? ' &ndash; ' + depths[i + 1] +'  '+ '<br>' : ' +  ')) ;
       }
       // add label items to the div 
       div.innerHTML += "<ul>" + labels.join("") + "</ul>";
