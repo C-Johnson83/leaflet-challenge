@@ -52,7 +52,7 @@ let jelloJigglers = L.geoJSON(shakeAndBake, {
         fillColor: markerColor(feature.geometry.coordinates[2]),
         color: "Black",
         weight: 1,
-        opacity: 0.75,
+        opacity: 0.5,
         fillOpacity: 1
     });
 },
@@ -120,32 +120,32 @@ let baseMaps = {
 };
 
 // Create my Home Town Marker/Layer and popup info
-let myLocation = L.circleMarker([31.4505, -83.5085], {
+let townLocation = L.circleMarker([31.4505, -83.5085], {
   fillColor: "orange",
   color: "red",
-  fillOpacity:.5,
+  fillOpacity:.25,
   weight: 1
-}).bindPopup(`<h1>My Home Town</h1><h2>Where there is almost nothing for residents to do <br> We are an interstate town with everything accessible<br>
-right off of the interstate.</h2><h3> Oh, and we can also have all 4 seasons in 1 week <h3><br><h3>Population: 17,235 (2021)<br> Humidity: 75%<br>
+}).bindPopup(`<h1>I Live in<br>Tifton, Georgia</h1><h2>Where there is almost nothing in town for residents to do.<br><br> We are an interstate town full of motels and fast food,<br>with most things accessible
+right off of the interstate.</h2><h3> We can also have all 4 seasons in 1 week <h3><br><h3>Population: 17,235 (2021)<br> Humidity: 75%<br>
  Temperature: 81° F<br>Elevation: 109 meters above Sea Level<h3> `);
-let myLayer = L.layerGroup([myLocation]);
+let townLayer = L.layerGroup([townLocation]);
 
 // Create Japan Marker/Layer and popup info
 let wishLocation = L.circleMarker([36.2048, 138.2529], {
   radius: 10,
   fillColor: "red",
   color: "white",
-  fillOpacity:.5,
+  fillOpacity:.25,
   weight: 3
 }).bindPopup(`<h1>I Would Love to Live here</h1><h2>Japan has a fascinating and multifaceted culture!</h2><h2> Amazing street foods such as:<h3>- Sushi<br>- Ramen<br>- and Tempura</h3><h2>
-Beautiful scenery such as: <h3>- The snow topped Mount Fuji</br>- The "cloud walk" at Unkai Terrace, </br>- And many many beautiful castles!
+Beautiful scenery such as: <h3>- Japan's largest mountain, Mount Fuji</br>- The "cloud walk" at Unkai Terrace, </br>- And many many beautiful castles!
 </h3><h2> Japan consists of a whopping 6,852 islands!<h3>Though most of them are uninhabited<h2>Population: 125.7 million (2021)<br> Humidity: 77%<br>
  Temperature: 70° F<br>Elevation: 438 meters above Sea Level<h2> `);
 let wishLayer = L.layerGroup([wishLocation]);
 
   // Create the overlay maps
   let overlayMaps = {
-    "Where I Live:": myLayer,
+    "Where I Live:": townLayer,
     "Where I Want to Live": wishLayer,
    "Tectonic plates": plates,
    "30 day Quake Spots": jelloJigglers,
@@ -157,12 +157,12 @@ let wishLayer = L.layerGroup([wishLocation]);
   let myMap = L.map("map", {
     center: [39.8283, -98.5795],
     zoom: 4,
-    layers: [CartoDB_DarkMatter, jelloJigglers,myLayer, wishLayer]
+    layers: [CartoDB_DarkMatter, jelloJigglers,townLayer, wishLayer]
   });
 
 //Add flyto so the screen moves to the markers lat, lon on click for the where I live
 // and where I want to live layers
-  myLocation.on('click', function(e) {
+  townLocation.on('click', function(e) {
     myMap.flyTo(e.latlng, 13);      
   }); 
   wishLocation.on('click', function(e) {
