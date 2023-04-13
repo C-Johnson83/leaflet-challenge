@@ -67,3 +67,9 @@ Perform the following tasks:
     - Put each dataset into separate overlays that can be turned on and off independently.
 
     - Add layer controls to your map.
+
+# Resource
+The code used in the leaflet part 2 logic file on lines 165 to 170 were modified to fit my code from an answer to a stackexchange page "Leaflet.js map - Pan too and Zoom in on point"
+
+This is the link the the source
+https://gis.stackexchange.com/questions/147052/leaflet-js-map-pan-too-and-zoom-in-on-point
