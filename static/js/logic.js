@@ -143,7 +143,7 @@ let baseMaps = {
       div.innerHTML += "<ul>" + labels.join("") + "</ul>";
       return div;
   };
-  // Add legend to the map
+  // Add legend to the maps
   legend.addTo(myMap);
 
 };
